@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-api
+  template:
+    metadata:
+      labels:
+        app: payment-api
+    spec:
+      containers:
+      - name: payment-service
+        image: origemglobaltecnologia/origem-payment:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_URL
+          value: ""
+        - name: DB_USER
+          value: ""
+        - name: DB_PASS
+          value: ""
+        - name: RABBIT_URL
+          value: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  type: NodePort
+  selector:
+    app: payment-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30082
